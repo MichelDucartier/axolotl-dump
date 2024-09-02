@@ -115,19 +115,20 @@ def create_loraplus_optimizer(
 
     optimizer = optimizer_cls(optimizer_grouped_parameters, **optimizer_kwargs)
     if optimizer_cls.__name__ == "Adam8bit":
-        import bitsandbytes
-
-        manager = bitsandbytes.optim.GlobalOptimManager.get_instance()
-
-        skipped = 0
-        for module in opt_model.modules():
-            if isinstance(module, nn.Embedding):
-                skipped += sum(
-                    {p.data_ptr(): p.numel() for p in module.parameters()}.values()
-                )
-                LOG.info(f"skipped {module}: {skipped/2**20}M params")
-                manager.register_module_override(module, "weight", {"optim_bits": 32})
-                LOG.debug(f"bitsandbytes: will optimize {module} in fp32")
-        LOG.info(f"skipped: {skipped/2**20}M params")
+        # import bitsandbytes
+        #
+        # manager = bitsandbytes.optim.GlobalOptimManager.get_instance()
+        #
+        # skipped = 0
+        # for module in opt_model.modules():
+        #     if isinstance(module, nn.Embedding):
+        #         skipped += sum(
+        #             {p.data_ptr(): p.numel() for p in module.parameters()}.values()
+        #         )
+        #         LOG.info(f"skipped {module}: {skipped/2**20}M params")
+        #         manager.register_module_override(module, "weight", {"optim_bits": 32})
+        #         LOG.debug(f"bitsandbytes: will optimize {module} in fp32")
+        # LOG.info(f"skipped: {skipped/2**20}M params")
+        raise ValueError("FF")
 
     return optimizer
