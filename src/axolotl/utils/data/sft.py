@@ -4,6 +4,7 @@ import functools
 import logging
 from pathlib import Path
 from typing import List, Optional, Tuple, Union
+import pandas as pd
 
 from datasets import (
     Dataset,
@@ -296,13 +297,15 @@ def load_tokenized_prepared_datasets(
                 elif local_path.is_file():
                     ds_type = get_ds_type(config_dataset)
 
-                    ds = load_dataset(
-                        ds_type,
-                        name=config_dataset.name,
-                        data_files=config_dataset.path,
-                        streaming=False,
-                        split=None,
-                    )
+                    # ds = load_dataset(
+                    #     ds_type,
+                    #     name=config_dataset.name,
+                    #     data_files=config_dataset.path,
+                    #     streaming=False,
+                    #     split=None,
+                    # )
+                    df = pd.read_json(config_dataset.path, lines=True)
+                    dataset = Dataset.from_pandas(df)
                 else:
                     raise ValueError(
                         "unhandled dataset load: local path exists, but is neither a directory or a file"
